@@ -3,7 +3,7 @@ from ..propagator import SPPropagator
 class SPFixed(SPPropagator):
     '''
     '''
-    def __init__(self, module, **kwargs):
+    def __init__(self, module):
         super().__init__()
         self.module = module
 

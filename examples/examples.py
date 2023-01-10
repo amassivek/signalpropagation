@@ -884,125 +884,151 @@ def print_test_info(
 #   TRAINING METHODS
 ##############################
 
-def predict(
-        model, data, target,
-    ):
+class Runner(object):
 
-    output = model(data, target)
-    with torch.no_grad():
-        pred, target, target_onehot, acc_mask, acc =\
-                calc_performance(output, target)
+    def predict(
+            self, model, data, target,
+        ):
 
-    loss = calc_loss(output, target)
+        output = model(data, target)
+        with torch.no_grad():
+            pred, target, target_onehot, acc_mask, acc =\
+                    calc_performance(output, target)
 
-    return loss, acc, acc_mask
+        loss = calc_loss(output, target)
 
-def train_batch(
-        model, data, target,
-    ):
+        return loss, acc, acc_mask
 
-    model.train()
+    def train_batch(
+            self, model, data, target,
+        ):
 
-    optimizer = model.optimizer.optimizer
+        model.train()
 
-    loss, acc, acc_mask =\
-        predict(model, data, target)
+        optimizer = model.optimizer.optimizer
 
-    optimizer.zero_grad()
-    loss.backward()
-    optimizer.step()
+        loss, acc, acc_mask =\
+            self.predict(model, data, target)
 
-    return acc_mask,loss
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
 
-def train_epoch(
-        epoch, model, train_loader, num_classes,
-    ):
+        return acc_mask,loss
 
-    epoch_info = argparse.Namespace()
-    epoch_info.acc = 0
-    epoch_info.count = 0
-    epoch_info.loss = 0
+    def train_epoch(
+            self, epoch, model, train_loader, num_classes,
+        ):
 
-    for batch, (data, target) in enumerate(train_loader):
+        epoch_info = argparse.Namespace()
+        epoch_info.acc = 0
+        epoch_info.count = 0
+        epoch_info.loss = 0
 
-        if args.cuda:
-            data, target = data.cuda(), target.cuda()
+        for batch, (data, target) in enumerate(train_loader):
 
-        data_size = data.size(0)
+            if args.cuda:
+                data, target = data.cuda(), target.cuda()
 
-        acc_mask, loss = train_batch(
-            model, data, target,
-        )
+            data_size = data.size(0)
 
-        epoch_info.acc += acc_mask.sum()
-        assert acc_mask.shape[0] == data.shape[0]
-        epoch_info.count += data.shape[0]
-        epoch_info.loss += loss * data.shape[0]
-
-        if batch == len(train_loader) - 1:
-            print_train_info(epoch_info, epoch, batch, len(train_loader))
-
-    return epoch_info
-
-def train(
-        model, num_classes,
-        train_loader, test_loader,
-        info
-    ):
-
-    save_model = SaveModel()
-
-    info.train = argparse.Namespace()
-    info.train.acc = 0
-    info.train.count = 0
-    info.train.loss = 0
-
-    time = 0
-
-    for epoch in range(args.epochs):
-
-        print("\n\n\n\nEpoch Start: {}".format(epoch))
-
-        epoch_info = train_epoch(
-            epoch, model, train_loader, num_classes
-        )
-
-        if time % args.eval_freq == 0:
-            test(epoch, model, test_loader, num_classes)
-
-        info.train.acc += epoch_info.acc
-        info.train.count += epoch_info.count
-        info.train.loss += epoch_info.loss
-
-        if args.save_freq > 0 and time % args.save_freq == 0:
-            save_model.save(
-                taskset, model, info.optimizers.slow.optimizer,
-                info.reporters.train, info.reporters.test
+            acc_mask, loss = self.train_batch(
+                model, data, target,
             )
 
-        time += 1
+            epoch_info.acc += acc_mask.sum()
+            assert acc_mask.shape[0] == data.shape[0]
+            epoch_info.count += data.shape[0]
+            epoch_info.loss += loss * data.shape[0]
 
-def test(epoch, model, test_loader, num_classes):
+            if batch == len(train_loader) - 1:
+                print_train_info(epoch_info, epoch, batch, len(train_loader))
 
-    model.eval()
-    test_info = argparse.Namespace()
-    test_info.acc = 1
-    test_info.count = 1
-    test_info.loss = 1
+        return epoch_info
 
-    for data, target in test_loader:
-        if args.cuda:
-            data, target = data.cuda(), target.cuda()
+    def train(
+            self, model, num_classes,
+            train_loader, test_loader,
+            info
+        ):
 
-        with torch.no_grad():
-            loss, acc, acc_mask =\
-                predict(model, data, target)
+        save_model = SaveModel()
 
-        test_info.acc += acc_mask.sum()
-        assert acc_mask.shape[0] == data.shape[0]
-        test_info.count += data.shape[0]
-        test_info.loss += loss * data.shape[0]
+        info.train = argparse.Namespace()
+        info.train.acc = 0
+        info.train.count = 0
+        info.train.loss = 0
 
-    print_test_info(test_info, epoch)
+        time = 0
 
-    return test_info
+        for epoch in range(args.epochs):
+
+            print("\n\n\n\nEpoch Start: {}".format(epoch))
+
+            epoch_info = self.train_epoch(
+                epoch, model, train_loader, num_classes
+            )
+
+            if time % args.eval_freq == 0:
+                self.test(epoch, model, test_loader, num_classes)
+
+            info.train.acc += epoch_info.acc
+            info.train.count += epoch_info.count
+            info.train.loss += epoch_info.loss
+
+            if args.save_freq > 0 and time % args.save_freq == 0:
+                save_model.save(
+                    taskset, model, info.optimizers.slow.optimizer,
+                    info.reporters.train, info.reporters.test
+                )
+
+            time += 1
+
+    def test(self, epoch, model, test_loader, num_classes):
+
+        model.eval()
+        test_info = argparse.Namespace()
+        test_info.acc = 1
+        test_info.count = 1
+        test_info.loss = 1
+
+        for data, target in test_loader:
+            if args.cuda:
+                data, target = data.cuda(), target.cuda()
+
+            with torch.no_grad():
+                loss, acc, acc_mask =\
+                    self.predict(model, data, target)
+
+            test_info.acc += acc_mask.sum()
+            assert acc_mask.shape[0] == data.shape[0]
+            test_info.count += data.shape[0]
+            test_info.loss += loss * data.shape[0]
+
+        print_test_info(test_info, epoch)
+
+        return test_info
+
+class RunnerSigprop(Runner):
+    def __init__(self, monitor_main):
+        self.monitor_main = monitor_main
+
+    def train_epoch(
+            self, epoch, model, train_loader, num_classes,
+        ):
+        self.monitor_main.reset()
+        epoch_info = super().train_epoch(
+            epoch, model, train_loader, num_classes,
+        )
+        print(self.monitor_main.metrics())
+        return epoch_info
+
+    def test(
+            self, epoch, model, test_loader, num_classes
+        ):
+        self.monitor_main.reset()
+        test_info = super().test(
+            epoch, model, test_loader, num_classes
+        )
+        print(self.monitor_main.metrics())
+        return test_info

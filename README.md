@@ -65,7 +65,7 @@ chmod +x examples.sh
 
 This quick start uses the forward learning model from Example 2, but on a simple
 network:\
-[Example 2: Input Target Max All](#example-2-input-target-max-rand)
+[Example 2: Input Target Max Rand](#example-2-input-target-max-rand)
 
 Concept overview of Signal Propagation:
 - There is a signal, placed at the front of the network.

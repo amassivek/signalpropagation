@@ -5,7 +5,7 @@ from .functional_other import forward, fixed, identity
 class SPIdentity(SPPropagator):
     '''
     '''
-    def __init__(self, module, **kwargs):
+    def __init__(self, module):
         super().__init__()
 
         self.module = module
@@ -16,7 +16,7 @@ class SPIdentity(SPPropagator):
 class SPFixed(SPPropagator):
     '''
     '''
-    def __init__(self, module, **kwargs):
+    def __init__(self, module):
         super().__init__()
 
         self.module = module
@@ -30,7 +30,7 @@ class SPFixed(SPPropagator):
 class SPForward(SPPropagator):
     '''
     '''
-    def __init__(self, module, **kwargs):
+    def __init__(self, module):
         super().__init__()
 
         self.module = module

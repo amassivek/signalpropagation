@@ -1,3 +1,5 @@
+from inspect import getfullargspec
+
 from torch import nn
 
 class SPManager(object):
@@ -22,12 +24,18 @@ class SPManager(object):
 class SPPrepared(SPManager):
     '''
     '''
-    def __init__(self, model_cls, propagator_cls, signal_cls):
+    def __init__(
+            self, model_cls, propagator_cls, signal_cls,
+            monitor_cls=None, monitor_main=None
+        ):
         super().__init__()
 
         self.propagator_cls = propagator_cls
         self.model_cls = model_cls
         self.signal_cls = signal_cls
+
+        self.monitor_cls = monitor_cls
+        self.monitor_main = monitor_main
 
         self.model = None
         self.signal = None
@@ -38,6 +46,11 @@ class SPPrepared(SPManager):
             raise RuntimeError(
                 "Signal already set."
             )
+        if self.monitor_cls is not None and "loss" in kwords:
+            loss = kwords["loss"]
+            loss = self.monitor_cls(module.__class__.__name__, loss)
+            self.monitor_main.add(loss)
+            kwords["loss"] = loss
         self.signal = self.signal_cls(module, **kwords)
         #self.propagators.append(self.signal)
         return self.signal
@@ -45,6 +58,15 @@ class SPPrepared(SPManager):
     def add_propagator(self, module, propagator_cls=None, **kwords):
         if propagator_cls is None:
             propagator_cls = self.propagator_cls
+        propagator_arg_names = getfullargspec(propagator_cls.__init__)[0]
+        for k in list(kwords.keys()):
+            if k not in propagator_arg_names:
+                del kwords[k]
+        if self.monitor_cls is not None and "loss" in kwords:
+            loss = kwords["loss"]
+            loss = self.monitor_cls(module.__class__.__name__, loss)
+            self.monitor_main.add(loss)
+            kwords["loss"] = loss
         propagator = propagator_cls(module, **kwords)
         self.propagators.append(propagator)
         return propagator
@@ -66,10 +88,13 @@ class SPPreset(SPPrepared):
     '''
     def __init__(self,
             model_cls, propagator_cls, signal_cls,
-            optimizer_builder,
+            optimizer_builder, monitor_cls=None, monitor_main=None,
             model_kwargs=None, propagator_kwargs=None, signal_kwargs=None,
         ):
-        super().__init__(model_cls, propagator_cls, signal_cls)
+        super().__init__(
+            model_cls, propagator_cls, signal_cls,
+            monitor_cls, monitor_main
+        )
 
         self.optimizer_builder = optimizer_builder
         if model_kwargs is None:
@@ -84,6 +109,12 @@ class SPPreset(SPPrepared):
             self.signal_kwords = dict()
         else:
             self.signal_kwords = signal_kwargs
+
+    def set_monitor(self, monitor_cls, monitor_main):
+        if self.monitor_cls is not None:
+            raise RuntimeError("Monitor already set.")
+        self.monitor_cls = monitor_cls
+        self.monitor_main = monitor_main
 
     def config_signal(self, **kwords):
         if self.signal is not None:
