@@ -2,7 +2,7 @@
 ## The Framework for Learning and Inference in a Forward Pass
 
 A guide and tutorial on forward learning is available at:\
-https://amassivek.github.com/sigprop
+https://amassivek.github.io/sigprop
 
 The paper detailing the framework for forward learning is available at:\
 https://arxiv.org/abs/2204.01723
