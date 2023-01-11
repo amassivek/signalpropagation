@@ -41,9 +41,14 @@ def main():
             sp_signal,
             loss=sigprop.loss.v14_input_target_max_rand
         )
+
+        runner = RunnerSigprop(monitor_main)
+
     else:
         sp_manager = None
         input_ch = None
+
+        runner = Runner()
 
     model = build_model(dataset_info, sp_manager, input_ch)
 
@@ -58,7 +63,7 @@ def main():
     print('[Global Loss] Model {} has {} parameters'.format(args.model, count_parameters(model)))
     print("cuda", args.cuda)
 
-    train(
+    runner.train(
         model,
         dataset_info.num_classes,
         train_loader, test_loader,

@@ -206,7 +206,7 @@ signal_input_module = nn.Sequential(
 )
 
 sp_signal = sigprop.signals.ProjectionContextInput(
-    *signal_modules_lpi(input_shape, output_shape),
+    signal_target_module, signal_input_module,
     input_shape, output_shape
 )
 # convert labels to a one-hot vector
@@ -375,14 +375,17 @@ This example feeds the inputs ``x`` (e.g. images) and their respective targets `
 pairs (or one after the other). Given pair ``x_i,t_i``, this example selects the closest matching pair ``x_j,t_j`` to compare
 with. If there are multiple equivalent matching pairs, it randomly selects one.
 
-### Example 4: Input Target Max Top-K
+### Example 4: Input Target Top-K
 ```
-ex4_input_target_max_topk.py
+ex4_input_target_topk.py
 ```
 
 This example feeds the inputs ``x`` (e.g. images) and their respective targets ``t`` (e.g. labels) as
 pairs (or one after the other). Given pair ``x_i,t_i``, this example selects the top ``k`` closest matching pair ``x_j,t_j`` to compare
 with.
+
+This example demonstrates how to add a monitor to each loss and display metrics
+for each layer wrapped with a propagator.
 
 ## 4. Documentation
 
@@ -436,6 +439,19 @@ a demonstration.
 ```
 sigprop/functional
 ```
+
+The functional interface to signal propagation.
+
+### 4.6. Monitors
+
+```
+sigprop/monitors
+```
+
+Monitor signals, propagators, and modules to record and display metrics.
+In [Example 4: Input Target Top-K](#example-4-input-target-topk), a monitor is
+wraps the loss to display metrics on the loss and accuracy for each layer
+wrapped with a propagator; in other words, it displays layer level metrics.
 
 ## 5. Development
 
