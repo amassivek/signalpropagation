@@ -1,5 +1,13 @@
-# Signal Propagation
-## The Framework for Learning and Inference in a Forward Pass
+# <p align="center">Signal Propagation</p>
+## <p align="center">The Framework for Unifying Learning and Inference in a Forward Pass</p>
+
+A python package for training parameterized models (e.g. neural networks) via the same forward pass used for inference. This package is for PyTorch.
+
+Signal Propagation (sigprop) is the forward pass learning library for developing and deploying continuous, asynchronous, and parallel (lifelong) learning algorithms on CPUs, GPUs, neuromorphics, and edge devices. continuous, asynchronous, and parallel
+
+Run the [Examples](https://github.com/amassivek/signalpropagation/tree/main/examples) and view the [Quick Start](#2-quick-start) for implementions details, experiments,, and more.
+
+Documentation for the package is below.
 
 A guide and tutorial on forward learning is available at:\
 https://amassivek.github.io/sigprop
