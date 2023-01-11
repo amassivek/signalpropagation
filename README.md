@@ -15,6 +15,8 @@ https://amassivek.github.io/sigprop
 The paper detailing the framework for forward learning is available at:\
 https://arxiv.org/abs/2204.01723
 
+[![Gitter](https://badges.gitter.im/sigprop/community.svg)](https://gitter.im/sigprop/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+
 ## TOC
 1. [Install](#1-install)
 2. [Quick Start](#2-quick-start)
