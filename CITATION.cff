@@ -1,0 +1,42 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: >-
+  Signal Propagation: The Library for Forward Learning in
+  Neural Networks
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Adam
+    family-names: Kohan
+    email: akohanumass@gmail.com
+identifiers:
+  - type: doi
+    value: 10.1109/TNNLS.2022.3230914
+  - type: url
+    value: 'https://arxiv.org/abs/2204.01723'
+    description: Arxiv Paper
+repository-code: 'https://github.com/amassivek/signalpropagation/'
+url: 'https://github.com/amassivek/signalpropagation/'
+abstract: >-
+  Signal Propgation is the Library for Learning in a Forward
+  Pass for Neural Networks. Wrap any PyTorch model using
+  this library to use only forward passes for learning,
+  instead backpropagation. Forward Pass Learning is a least
+  constrained learning method, efficient in memory and
+  computation, and compatible with edge and neuromorphic
+  devices.
+keywords:
+  - forward learning
+  - signal propagation
+  - neural networks
+  - local learning
+  - deep learning
+  - artificial intelligence
+  - spiking neural networks
+  - recurrent neural networks
+  - continuous neural networks
+  - biological neural networks
